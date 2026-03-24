@@ -29,6 +29,10 @@ type ApiEdge = {
   relation: string;
 };
 
+type GraphShellProps = {
+  highlightedNodeIds?: string[];
+};
+
 const colorByEntity: Record<string, { bg: string; border: string }> = {
   SalesOrder: { bg: "#dbeafe", border: "#60a5fa" },
   SalesOrderItem: { bg: "#e0e7ff", border: "#818cf8" },
@@ -54,6 +58,7 @@ function toFlowNode(node: ApiNode, index: number): Node {
     },
     data: {
       label: node.label,
+      entityType: node.entityType,
     },
     style: {
       background: palette.bg,
@@ -76,7 +81,22 @@ function toFlowEdge(edge: ApiEdge): Edge {
   };
 }
 
-export function GraphShell() {
+function withHighlightStyle(node: Node, highlighted: Set<string>): Node {
+  const entityType = String((node.data as { entityType?: string } | undefined)?.entityType ?? "");
+  const palette = colorByEntity[entityType] ?? { bg: "#f3f4f6", border: "#9ca3af" };
+  const isHighlighted = highlighted.has(node.id);
+  return {
+    ...node,
+    style: {
+      ...node.style,
+      background: palette.bg,
+      border: isHighlighted ? "2px solid #111827" : `1px solid ${palette.border}`,
+      boxShadow: isHighlighted ? "0 0 0 3px rgba(17, 24, 39, 0.15)" : "none",
+    },
+  };
+}
+
+export function GraphShell({ highlightedNodeIds = [] }: GraphShellProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedNode, setSelectedNode] = useState<ApiNode | null>(null);
@@ -90,15 +110,53 @@ export function GraphShell() {
       const response = await fetch(`${appConfig.apiBaseUrl}/graph/seed?limit=24`);
       const payload = (await response.json()) as { nodes: ApiNode[]; ok: boolean };
       if (!payload.ok) return;
-      setNodes(payload.nodes.map((node, index) => toFlowNode(node, index)));
+      const highlightedSet = new Set(highlightedNodeIds);
+      setNodes(payload.nodes.map((node, index) => withHighlightStyle(toFlowNode(node, index), highlightedSet)));
     } finally {
       setLoading(false);
     }
-  }, [setNodes]);
+  }, [highlightedNodeIds, setNodes]);
 
   useEffect(() => {
     loadSeed();
   }, [loadSeed]);
+
+  useEffect(() => {
+    const highlightedSet = new Set(highlightedNodeIds);
+    setNodes((current) => current.map((node) => withHighlightStyle(node, highlightedSet)));
+  }, [highlightedNodeIds, setNodes]);
+
+  useEffect(() => {
+    async function ensureHighlightedNodesLoaded() {
+      if (!highlightedNodeIds.length) return;
+
+      const missing = highlightedNodeIds.filter((id) => !nodeById.has(id)).slice(0, 10);
+      if (!missing.length) return;
+
+      const loadedNodes: ApiNode[] = [];
+      for (const id of missing) {
+        const response = await fetch(`${appConfig.apiBaseUrl}/graph/node/${encodeURIComponent(id)}`);
+        if (!response.ok) continue;
+        const payload = (await response.json()) as { ok: boolean; node?: ApiNode };
+        if (payload.ok && payload.node) loadedNodes.push(payload.node);
+      }
+
+      if (loadedNodes.length) {
+        setNodes((current) => {
+          const existing = new Set(current.map((n) => n.id));
+          const highlightedSet = new Set(highlightedNodeIds);
+          const next = [...current];
+          for (const apiNode of loadedNodes) {
+            if (existing.has(apiNode.id)) continue;
+            next.push(withHighlightStyle(toFlowNode(apiNode, next.length), highlightedSet));
+          }
+          return next;
+        });
+      }
+    }
+
+    void ensureHighlightedNodesLoaded();
+  }, [highlightedNodeIds, nodeById, setNodes]);
 
   const onNodeClick: NodeMouseHandler = useCallback(
     async (_evt, node) => {
@@ -120,10 +178,11 @@ export function GraphShell() {
 
       setNodes((current) => {
         const existing = new Map(current.map((n) => [n.id, n]));
+        const highlightedSet = new Set(highlightedNodeIds);
         const next = [...current];
         for (const apiNode of payload.nodes) {
           if (existing.has(apiNode.id)) continue;
-          next.push(toFlowNode(apiNode, next.length));
+          next.push(withHighlightStyle(toFlowNode(apiNode, next.length), highlightedSet));
         }
         return next;
       });
@@ -141,7 +200,7 @@ export function GraphShell() {
         return next;
       });
     },
-    [nodeById, setEdges, setNodes],
+    [highlightedNodeIds, nodeById, setEdges, setNodes],
   );
 
   return (

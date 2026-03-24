@@ -27,9 +27,9 @@ app.get("/health", (_req, res) => {
 
 app.get("/api/milestone-status", (_req, res) => {
   res.json({
-    milestone: 4,
+    milestone: 6,
     status: "completed",
-    nextMilestone: 5,
+    nextMilestone: null,
     stack: {
       backend: "express-typescript",
       db: "sqlite-better-sqlite3",
