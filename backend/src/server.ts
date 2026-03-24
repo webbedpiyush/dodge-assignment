@@ -4,6 +4,7 @@ import { env } from "./config.js";
 import { getSqlite } from "./db/client.js";
 import { GraphService } from "./graph/service.js";
 import { ingestDataset } from "./ingestion/ingest.js";
+import { runNaturalLanguageQuery } from "./query/service.js";
 
 const app = express();
 const db = getSqlite();
@@ -26,9 +27,9 @@ app.get("/health", (_req, res) => {
 
 app.get("/api/milestone-status", (_req, res) => {
   res.json({
-    milestone: 3,
+    milestone: 4,
     status: "completed",
-    nextMilestone: 4,
+    nextMilestone: 5,
     stack: {
       backend: "express-typescript",
       db: "sqlite-better-sqlite3",
@@ -100,6 +101,20 @@ app.get("/graph/neighbors/:nodeId", (req, res) => {
     ok: true,
     ...neighborhood,
   });
+});
+
+app.post("/query", async (req, res) => {
+  const prompt = String(req.body?.prompt ?? "").trim();
+  if (!prompt) {
+    res.status(400).json({
+      ok: false,
+      message: "Prompt is required.",
+    });
+    return;
+  }
+
+  const response = await runNaturalLanguageQuery(prompt);
+  res.status(response.ok ? 200 : 400).json(response);
 });
 
 app.listen(env.PORT, () => {
