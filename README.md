@@ -2,6 +2,14 @@
 
 This project unifies fragmented Order-to-Cash (O2C) data into a graph and provides a natural-language query interface that returns dataset-grounded answers.
 
+## Quick Links
+
+- Architecture image export: `docs/diagrams/architecture-overview.svg`
+- UI screenshots:
+  - `docs/screenshots/graph-chat-overview.png`
+  - `docs/screenshots/node-query-detail.png`
+- Submission checklist: `SUBMISSION_CHECKLIST.md`
+
 ## Stack
 
 - Frontend: `Next.js`, `ReactFlow`, `Tailwind`
@@ -25,7 +33,23 @@ The system builds:
 - a graph projection for traversal and visual exploration,
 - an NL query path that translates prompts to SQL with strict safety checks.
 
+## UI Screenshots
+
+### Graph + Chat Overview
+
+![Graph and chat overview](docs/screenshots/graph-chat-overview.png)
+
+### Node Detail + Query Response
+
+![Node detail and query response](docs/screenshots/node-query-detail.png)
+
 ## Architecture
+
+### Exported Diagram (for submission/docs)
+
+![Architecture overview](docs/diagrams/architecture-overview.svg)
+
+### Mermaid Source
 
 ```mermaid
 flowchart LR
@@ -126,14 +150,14 @@ Implemented at two layers:
 
 ## Local Setup
 
-## 1) Install dependencies
+### 1) Install dependencies
 
 ```bash
 cd backend && npm install
 cd ../frontend && npm install
 ```
 
-## 2) Environment
+### 2) Environment
 
 Create `.env` in project root from `.env.example`.
 
@@ -145,21 +169,21 @@ Key vars:
 - `GEMINI_API_KEY=<optional but recommended>`
 - `GEMINI_MODEL=gemini-2.5-flash`
 
-## 3) Ingest data
+### 3) Ingest data
 
 ```bash
 cd backend
 npm run ingest
 ```
 
-## 4) Run backend
+### 4) Run backend
 
 ```bash
 cd backend
 npm run dev
 ```
 
-## 5) Run frontend
+### 5) Run frontend
 
 ```bash
 cd frontend

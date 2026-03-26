@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+  <defs>
+    <style>
+      .title { font: 700 24px Arial, sans-serif; fill: #111827; }
+      .label { font: 600 14px Arial, sans-serif; fill: #111827; }
+      .sub { font: 400 12px Arial, sans-serif; fill: #4b5563; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 10; }
+      .accent { fill: #eff6ff; stroke: #60a5fa; stroke-width: 2; rx: 10; }
+      .db { fill: #f5f3ff; stroke: #8b5cf6; stroke-width: 2; rx: 10; }
+      .arrow { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <text x="40" y="50" class="title">O2C Graph + Conversational Query Architecture</text>
+
+  <rect x="40" y="100" width="240" height="120" class="accent" />
+  <text x="60" y="140" class="label">Frontend (Next.js)</text>
+  <text x="60" y="165" class="sub">ReactFlow graph canvas</text>
+  <text x="60" y="185" class="sub">Chat panel + SQL preview</text>
+
+  <rect x="360" y="80" width="280" height="160" class="box" />
+  <text x="380" y="120" class="label">Backend (Express + TypeScript)</text>
+  <text x="380" y="145" class="sub">/graph/seed /graph/node /graph/neighbors</text>
+  <text x="380" y="165" class="sub">/query /ingest</text>
+  <text x="380" y="185" class="sub">Guardrails + SQL safety</text>
+  <text x="380" y="205" class="sub">Prompt ’ SQL ’ Execute ’ Answer</text>
+
+  <rect x="720" y="70" width="220" height="120" class="db" />
+  <text x="740" y="110" class="label">SQLite (better-sqlite3)</text>
+  <text x="740" y="135" class="sub">Normalized O2C tables</text>
+  <text x="740" y="155" class="sub">Raw JSON traceability</text>
+
+  <rect x="720" y="230" width="220" height="120" class="box" />
+  <text x="740" y="270" class="label">Graph Service</text>
+  <text x="740" y="295" class="sub">Typed node/edge projection</text>
+  <text x="740" y="315" class="sub">Neighbor expansion</text>
+
+  <rect x="980" y="80" width="180" height="110" class="box" />
+  <text x="1000" y="120" class="label">Gemini 2.5 Flash</text>
+  <text x="1000" y="145" class="sub">Structured SQL plan</text>
+
+  <rect x="360" y="300" width="280" height="150" class="box" />
+  <text x="380" y="340" class="label">Validation + Docs</text>
+  <text x="380" y="365" class="sub">validate:queries script</text>
+  <text x="380" y="385" class="sub">README + submission checklist</text>
+  <text x="380" y="405" class="sub">Assignment-focused test coverage</text>
+
+  <path d="M280 160 L360 160" class="arrow" />
+  <path d="M640 125 L720 125" class="arrow" />
+  <path d="M640 180 L720 280" class="arrow" />
+  <path d="M940 125 L980 125" class="arrow" />
+  <path d="M980 160 L640 160" class="arrow" />
+  <path d="M720 320 L640 200" class="arrow" />
+  <path d="M640 360 L720 300" class="arrow" />
+</svg>
